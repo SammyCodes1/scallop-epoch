@@ -45,7 +45,24 @@
           </div>
         </div>
         <p class="proof">The first DeFi protocol to receive a Sui Foundation grant. SCA is listed on Kraken.</p>
-        <p class="tvl">Total value locked <strong data-tvl>Loading</strong></p>
+        <dl class="tvl-row">
+          <div>
+            <dt>Total value locked</dt>
+            <dd data-stat="total">Loading</dd>
+          </div>
+          <div>
+            <dt>Total lending supply</dt>
+            <dd data-stat="lending">Loading</dd>
+          </div>
+          <div>
+            <dt>Total collateral deposited</dt>
+            <dd data-stat="collateral">Loading</dd>
+          </div>
+          <div>
+            <dt>Total borrowed</dt>
+            <dd data-stat="borrowed">Loading</dd>
+          </div>
+        </dl>
       </div>
     </section>
 
@@ -76,7 +93,7 @@
       <div class="wrap">
         <p class="eyebrow">The app</p>
         <h2>From lending to spot.</h2>
-        <p class="lede">Six screens from the live app. Each link opens that page.</p>
+        <p class="lede">Screens from the live app, plus Scallop Explorer. Each link opens that page.</p>
         <div class="show-grid">
           <article class="shot reveal">
             <a href="https://app.scallop.io/" target="_blank" rel="noopener noreferrer">
@@ -132,10 +149,27 @@
             <p>Move assets in through the bridge page.</p>
             <a href="https://app.scallop.io/bridge" target="_blank" rel="noopener noreferrer">Open bridge</a>
           </article>
+          <article class="shot reveal">
+            <a href="https://app.scallop.io/tools" target="_blank" rel="noopener noreferrer">
+              <img src="/shots/tools.jpg" alt="Scallop Tools, a builder for one Sui transaction" width="1440" height="900">
+            </a>
+            <p class="tick">07 · Tools</p>
+            <h3>Tools</h3>
+            <p>Build a programmable transaction block without writing code. Bundle lending, swaps, and transfers into one transaction.</p>
+            <a href="https://app.scallop.io/tools" target="_blank" rel="noopener noreferrer">Open tools</a>
+          </article>
+          <article class="shot reveal">
+            <a href="https://explorer.scallop.io/" target="_blank" rel="noopener noreferrer">
+              <img src="/shots/explorer.jpg" alt="Scallop Explorer home, with the Sui network summary" width="1440" height="900">
+            </a>
+            <p class="tick">08 · Explorer</p>
+            <h3>Explorer</h3>
+            <p>Read transactions, checkpoints, validators, and epochs on Sui. Set it as the explorer inside the Scallop app.</p>
+            <a href="https://explorer.scallop.io/" target="_blank" rel="noopener noreferrer">Open explorer</a>
+          </article>
         </div>
         <p class="more-apps">
           <a href="https://app.scallop.io/referral" target="_blank" rel="noopener noreferrer">Referral</a>
-          <a href="https://app.scallop.io/tools" target="_blank" rel="noopener noreferrer">Tools</a>
           <a href="https://app.scallop.io/leaderboard" target="_blank" rel="noopener noreferrer">Leaderboard</a>
         </p>
       </div>
@@ -349,6 +383,7 @@ print(query.get_tvl().total_value)</pre>
         <a href="https://docs.scallop.io/" target="_blank" rel="noopener noreferrer">Docs</a>
         <a href="https://app.scallop.io/" target="_blank" rel="noopener noreferrer">App</a>
         <a href="https://x.com/Scallop_io" target="_blank" rel="noopener noreferrer">@Scallop_io</a>
+        <a href="https://explorer.scallop.io/" target="_blank" rel="noopener noreferrer">Explorer</a>
         <a href="https://chromewebstore.google.com/detail/scallop-wallet/cofjeilfnmicgcolcdjljnnmonmknfbb" target="_blank" rel="noopener noreferrer">Wallet</a>
       </nav>
     </div>
@@ -378,25 +413,33 @@ print(query.get_tvl().total_value)</pre>
     })();
 
     (function () {
-      var tvlNode = document.querySelector("[data-tvl]");
-      if (tvlNode) {
+      var statFields = {
+        total: "totalValue",
+        lending: "supplyLendingValue",
+        collateral: "supplyCollateralValue",
+        borrowed: "borrowValue"
+      };
+      var money = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      });
+      function paintStats(data) {
+        Object.keys(statFields).forEach(function (key) {
+          var node = document.querySelector('[data-stat="' + key + '"]');
+          if (!node) return;
+          var value = data ? Number(data[statFields[key]]) : NaN;
+          node.textContent = isFinite(value) ? money.format(value) : "Unavailable";
+        });
+      }
+      if (document.querySelector("[data-stat]")) {
         fetch("https://sdk.api.scallop.io/api/market/tvl")
           .then(function (response) {
             if (!response.ok) throw new Error("tvl");
             return response.json();
           })
-          .then(function (data) {
-            var value = Number(data.totalValue);
-            if (!isFinite(value)) throw new Error("tvl");
-            tvlNode.textContent = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              maximumFractionDigits: 0
-            }).format(value);
-          })
-          .catch(function () {
-            tvlNode.textContent = "Unavailable";
-          });
+          .then(paintStats)
+          .catch(function () { paintStats(null); });
       }
 
       function legacyCopy(text) {

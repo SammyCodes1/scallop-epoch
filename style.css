@@ -191,24 +191,40 @@ a { color: inherit; }
 
 .proof { margin: 22px 0 0; }
 
-.tvl {
-  margin: 16px 0 0;
+.tvl-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px 28px;
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(241, 214, 200, 0.45);
+}
+
+.tvl-row div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.tvl-row dt {
+  margin: 0;
   color: var(--sand);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.tvl strong {
-  display: inline-block;
-  margin-left: 10px;
+.tvl-row dd {
+  margin: 8px 0 0;
   color: var(--pearl);
-  font-size: 1.55rem;
+  font-family: var(--font-display);
   font-weight: 800;
+  font-size: 1.45rem;
   letter-spacing: -0.04em;
-  text-transform: none;
+  line-height: 1.1;
 }
 
 .lanes { padding: 18px 0 72px; }
@@ -552,14 +568,14 @@ footer {
   .hero h1,
   .hero-foot,
   .hero .proof,
-  .hero .tvl {
+  .hero .tvl-row {
     animation: rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .hero h1 { animation-delay: 0.08s; }
   .hero-foot { animation-delay: 0.18s; }
   .hero .proof { animation-delay: 0.28s; }
-  .hero .tvl { animation-delay: 0.36s; }
+  .hero .tvl-row { animation-delay: 0.36s; }
 
   .btn:hover { transform: translateY(-2px); }
   .lane:hover a,
@@ -622,6 +638,7 @@ footer {
   .defs strong { display: block; margin-bottom: 6px; }
   .close .btn { margin-top: 18px; }
   .foot nav { margin-top: 16px; flex-wrap: wrap; }
+  .tvl-row { grid-template-columns: 1fr 1fr; }
   .show-grid,
   .wallet-grid,
   .agent-list { grid-template-columns: 1fr; }
@@ -636,7 +653,7 @@ footer {
   .hero h1,
   .hero-foot,
   .hero .proof,
-  .hero .tvl,
+  .hero .tvl-row,
   .js .reveal {
     animation: none;
     opacity: 1;
